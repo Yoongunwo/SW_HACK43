@@ -1,6 +1,7 @@
 // Google Maps API를 초기화하는 함수
 function initMap() {
     // 두 지점의 위도와 경도
+
     var pointA = { lat: 37.7749, lng: -122.4194 }; // 출발지
     var pointB = { lat: 34.0522, lng: -118.2437 }; // 도착지
 
