@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <script src="https://code.jquery.com/jquery-1.11.0.js"></script>
+    <script>
+        $(function () {
+            // Geolocation API에 액세스할 수 있는지를 확인
+            if (navigator.geolocation) {
+                //위치 정보를 정기적으로 얻기
+                var id = navigator.geolocation.watchPosition(
+                    function (pos) {
+                        $('#latitude').html(pos.coords.latitude);     // 위도
+                        $('#longitude').html(pos.coords.longitude); // 경도
+                    });
+
+                // 버튼 클릭으로 감시를 중지
+                $('#btnStop').click(function () {
+                    navigator.geolocation.clearWatch(id);
+                });
+            } else {
+                alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.")
+            }
+
+        });
+    </script>
+    <script defer src="/js/geoLocation.js"></script>
+    <script
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE&callback=initMap"
+    ></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li>위도:<span id="latitude"></span></li>
+        <li>경도:<span id="longitude"></span></li>
+    </ul>
+    <input id="btnStop" type="button" value="감시를 끝낸다"/>
+    <div id="map"></div>
+    <div>
+        <strong>Start: </strong>
+        <select id="start" onchange="calculateAndDisplayRoute();">
+            <option value="chicago, il">Chicago</option>
+            <option value="st louis, mo">St Louis</option>
+            <option value="joplin, mo">Joplin, MO</option>
+            <option value="oklahoma city, ok">Oklahoma City</option>
+            <option value="amarillo, tx">Amarillo</option>
+            <option value="gallup, nm">Gallup, NM</option>
+            <option value="flagstaff, az">Flagstaff, AZ</option>
+            <option value="winona, az">Winona</option>
+            <option value="kingman, az">Kingman</option>
+            <option value="barstow, ca">Barstow</option>
+            <option value="san bernardino, ca">San Bernardino</option>
+            <option value="los angeles, ca">Los Angeles</option>
+        </select>
+        <strong>End: </strong>
+        <select id="end" onchange="calculateAndDisplayRoute();">
+            <option value="chicago, il">Chicago</option>
+            <option value="st louis, mo">St Louis</option>
+            <option value="joplin, mo">Joplin, MO</option>
+            <option value="oklahoma city, ok">Oklahoma City</option>
+            <option value="amarillo, tx">Amarillo</option>
+            <option value="gallup, nm">Gallup, NM</option>
+            <option value="flagstaff, az">Flagstaff, AZ</option>
+            <option value="winona, az">Winona</option>
+            <option value="kingman, az">Kingman</option>
+            <option value="barstow, ca">Barstow</option>
+            <option value="san bernardino, ca">San Bernardino</option>
+            <option value="los angeles, ca">Los Angeles</option>
+        </select>
+    </div>
+</body>
+</html>
