@@ -4,9 +4,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이동거리 선택</title>
-    <link rel="stylesheet" href="/resources/static/css/style.css">
+    <link rel="stylesheet" href="style.css">
 
     <style>
+        .box {
+            background-color: rgb(179, 179, 179);
+            width: 60%;
+            height: 15%;
+            padding: 20px;
+            margin:0 auto;
+            border-radius: 30px;
+        }
+
         .minDistance{
             position:absolute;
             left:15%;
@@ -15,32 +24,44 @@
             position:absolute;
             right:15%;
         }
+
     </style>
 
 </head>
 <body>
     <br><p class="bigfont" style="margin:100px">이동거리를 선택해주세요</p><br>
-    <div style="display: inline-block;font-size: 125%;" id="minDistance" class="minDistance">0.5 Km</div>
+    <div style="display: inline-block;font-size: 125%;" id="minDistance" class="minDistance">0 Km</div>
     <div style="display: inline-block;"><div id="value" style="font-size: 200%;"></div></div> <!-- 현재 거리 표시-->
     <div style="display: inline-block;font-size: 125%;" id="maxDistance"class="maxDistance">10 Km</div><br>
 
-    <form method="post" action="https://0284-211-194-113-3.ngrok-free.app/api/km/2">
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
+    <form method="post" action="https://0284-211-194-113-3.ngrok-free.app/api/km/2"> <!-- 데이터(거리,현재 위치[위도,경도]) 보내는 주소 action에 입력 -->
+        <input type="hidden" id="latitude" name="latitude"> <!-- 현재 위도 -->
+        <input type="hidden" id="longitude" name="longitude"> <!-- 현재 경도 -->
         <input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance" name="distance"><br>
 
         <div style="display: inline-block;font-size: 100%;" id="minDistance" class="minDistance">최소</div>
         <div style="display: inline-block;font-size: 100%;" id="minDistance" class="maxDistance">최대</div>
-    
-        <input type="submit" style="margin:100px" class="button" value="추천받기">
+        
+        <div style="margin:50px;"></div>
+        <div class="box">소요 시간 : <span id="walkingTime"></span></div>
+        <div style="margin:50px;"></div>
+
+        총 거리 : <span id="distanceDisplay"></span><br>
+        <div style="margin:50px;"></div>
+
+        <input type="submit" style="margin:0 auto;" class="button" value="추천받기">
     </form>
 
     <script>
         var slider = document.getElementById("walkingdistance");
         var output = document.getElementById("value");
+        var distanceText = document.getElementById("distanceDisplay");
+        var walkingTime = document.getElementById("walkingTime");
 
         function updateValue() {
             output.innerHTML = slider.value + " Km";
+            walkingTime.innerHTML = (slider.value/0.5) * 7 + " 분"; /*슬라이더의 총 단계수를 구하고, 한 단계당 7분씩 추가*/
+            distanceText.innerHTML = output.innerHTML;
         }
 
         slider.oninput = function() {

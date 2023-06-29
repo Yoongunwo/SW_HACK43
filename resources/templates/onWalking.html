@@ -1,0 +1,81 @@
+<!-- google api key :   AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE   -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>남은 산책 거리</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .map-container {
+            position: relative;
+        }
+
+        .box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            width: 80%;
+            height: 15%;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.432);
+        }
+
+        #progress {
+            appearance: none;
+            width: 100%;
+            height: 30px;
+        }
+
+        #progress::-webkit-progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            box-shadow: inset 3px 3px 10px #ccc;
+        }
+
+        #progress::-webkit-progress-value {
+            border-radius: 10px;
+            background: #1bb91b;
+            background: -webkit-linear-gradient(to right, #7ee769, #1bb91b);
+            background: linear-gradient(to right, #7ee769, #1bb91b);
+        }
+
+        #map {
+            height: calc(100vh - 200px);
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="box">
+            <span style="font-size: 150%; float:left;">남은 거리 : </span>
+            <span style="font-size: 150%; float:right;"id="remainDistance"></span>
+            <progress id="progress" value="100" min="0" max="100"></progress>
+        </div>
+    </div>
+
+    <script src="geoLocation.js"></script> <!-- 현재 경로 표시하는 js 불러옴 -->
+    <script>
+        // 위치 정보를 출력할 객체 구하기
+        var elt = document.getElementById("myLocationInfo");
+        // 정보 표시할 객체들 구하기
+        var distance = document.getElementById("remainDistance");
+        var progressBar = document.getElementById("progress");
+
+        // 위치 정보 출력하기
+        whereami(elt);
+
+        distance.innerHTML = "2.4 Km"; /* 남은 거리값 출력 */
+        progressBar.value = "70"; /* 프로그레스바 백분율로 표시 */
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE&callback=showYourLocation" async defer></script>
+</body>
+</html>
