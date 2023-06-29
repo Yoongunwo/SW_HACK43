@@ -20,6 +20,10 @@ public class homeController {
     }
 
     @GetMapping("/")
+    public String main(){
+        return "main";
+    }
+    @GetMapping("/step1")
     public String step1() {
         return "selectType";
     }
