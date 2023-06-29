@@ -21,12 +21,12 @@ public class homeController {
 
     @GetMapping("/")
     public String step1() {
-        return "selectType";
+        return "course1";
     }
 
     @GetMapping("/step2")
     public String step2() {
-        return "setDistance";
+        return "course2";
     }
 
     //    @PostMapping("/tmap/{km}")
