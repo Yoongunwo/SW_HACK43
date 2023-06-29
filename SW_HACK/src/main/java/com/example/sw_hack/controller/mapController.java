@@ -1,7 +1,9 @@
 package com.example.sw_hack.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class mapController {
@@ -11,19 +13,18 @@ public class mapController {
     }
     @GetMapping("/hi1")
     public String marker1(){
-        return "test2";
+        return "route";
     }
-    @GetMapping("/curloc")
-    public String curLocation(){
-        return "curLocation";
-    }
-    @GetMapping("/route")
-    public String route(){
-        return "directionService";
-    }
-    @GetMapping("/geoLocation")
+    @GetMapping("/getLocation")
     public String geoLocation(){
         return "geoLocation";
     }
 
+    @GetMapping("/route")
+    public String getRoute(){
+        //model.addAttribute("lat", route[][0]);
+        //model.addAttribute("lng", route[][1]);
+
+        return "route";
+    }
 }

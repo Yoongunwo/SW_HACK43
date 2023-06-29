@@ -2,8 +2,8 @@
 function initMap() {
     // 두 지점의 위도와 경도
 
-    var pointA = { lat: 37.7749, lng: -122.4194 }; // 출발지
-    var pointB = { lat: 34.0522, lng: -118.2437 }; // 도착지
+    var pointA = { lat: 37.5518, lng: 126.9500 }; // 출발지
+    var pointB = { lat: 37.5518, lng: 126.9775 }; // 도착지
 
     // 맵을 생성하고 초기 위치로 설정합니다
     var map = new google.maps.Map(document.getElementById('map'), {
