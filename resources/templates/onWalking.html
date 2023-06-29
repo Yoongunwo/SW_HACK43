@@ -5,9 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <title>남은 산책 거리</title>
-    <link rel="stylesheet" href="style.css">
 
     <style>
+        body{
+            width: 300px;
+            height: 500px;
+            margin-left: 600px;
+        }
+
         .map-container {
             position: relative;
         }
@@ -45,7 +50,8 @@
         }
 
         #map {
-            height: calc(100vh - 200px);
+            width : 300px;
+            height: 480px;
             margin: 0 auto;
             margin-top: 20px;
         }
@@ -56,7 +62,8 @@
         <div id="map"></div>
         <div class="box">
             <span style="font-size: 150%; float:left;">남은 거리 : </span>
-            <span style="font-size: 150%; float:right;"id="remainDistance"></span>
+            <span style="font-size: 150%; float:right;"id="remainDistance"></span><br>
+            <img src="gradation.png" style="width:100%; height:5px;">
             <progress id="progress" value="100" min="0" max="100"></progress>
         </div>
     </div>
@@ -65,16 +72,14 @@
     <script>
         // 위치 정보를 출력할 객체 구하기
         var elt = document.getElementById("myLocationInfo");
-        // 정보 표시할 객체들 구하기
         var distance = document.getElementById("remainDistance");
         var progressBar = document.getElementById("progress");
-
-        // 위치 정보 출력하기
-        whereami(elt);
 
         distance.innerHTML = "2.4 Km"; /* 남은 거리값 출력 */
         progressBar.value = "70"; /* 프로그레스바 백분율로 표시 */
 
+        // 위치 정보 출력하기
+        whereami(elt);
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE&callback=showYourLocation" async defer></script>
 </body>
