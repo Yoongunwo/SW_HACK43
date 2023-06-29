@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +7,45 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <br><p class="bigfont">이동거리를 선택해주세요</p><br>
-    <div id="value" class="output"></div>
-    <input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance"><br>
+    <br>
+        <script
+            src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve"></script>
 
-    <a href="/getLocation">
-        <button type="button" class = "button">
-            추천받기
-        </button>
-    </a>
+        <input type="hidden" id="latitude" value="">
+        <input type="hidden" id="longitude" value="">
+
+        <script th:inline="javascript">
+            function initTmap() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            var lat = position.coords.latitude;
+                            var lon = position.coords.longitude;
+
+                        // 위도와 경도를 숨겨진 필드에 저장
+                            document.getElementById('latitude').value = lat;
+                            document.getElementById('longitude').value = lon;
+                        }
+                    )
+                }
+            }
+
+            // 페이지 로드시 initTmap 함수 호출
+            window.onload = initTmap;
+        </script>
+        <p class="bigfont">이동거리를 선택해주세요</p><br>
+        <div id="value" class="output"></div>
+        <input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance"><br>
+        <button type="button" onclick="navigateToNextPage()">버튼</button>
+
     <script>
-        var slider = document.getElementById("walkingdistance");
-        var output = document.getElementById("value");
-        output.innerHTML = slider.value;
-
-        slider.oninput = function(){
-        output.innerHTML = this.value;
-    }
+        function navigateToNextPage() {
+            var walkingDistance = document.getElementById('walkingdistance').value;
+            var lat = document.getElementById('latitude').value;
+            var lon = document.getElementById('longitude').value;
+            var url = 'http://localhost:8080/tmap/' + walkingDistance + '/' + lat + '/' + lon;
+            window.location.href = url;
+        }
     </script>
 </body>
 </html>

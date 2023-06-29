@@ -9,5 +9,4 @@ public class SwHackApplication {
     public static void main(String[] args) {
         SpringApplication.run(SwHackApplication.class, args);
     }
-
 }

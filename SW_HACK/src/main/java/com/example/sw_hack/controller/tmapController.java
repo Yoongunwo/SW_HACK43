@@ -13,10 +13,15 @@ public class tmapController {
         this.googleMaps = googleMaps;
     }
 
-    @GetMapping("/tmap/{km}")
+/*    @GetMapping("/tmap/{km}")
     public String tmap(@PathVariable(name="km")long km, Model model){
         double[][] list =  googleMaps.getRandomPlace(km);
         model.addAttribute("latLng", list);
         return "tmap";
+    }*/
+
+    @GetMapping("/tmap/curlocate")
+    public String curloc(){
+        return "curlocate";
     }
 }

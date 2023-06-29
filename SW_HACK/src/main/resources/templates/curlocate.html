@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>simpleMap</title>
+  <script
+          src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve"></script>
+  <script type="text/javascript">
+    var map, marker;
+    // 페이지가 로딩이 된 후 호출하는 함수입니다.
+    function initTmap(){
+      // HTML5의 geolocation으로 사용할 수 있는지 확인합니다
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+                function(position) {
+                  var lat = position.coords.latitude;
+                  var lon = position.coords.longitude;
+
+                  map = new Tmapv2.Map("map_div", {
+                    center : new Tmapv2.LatLng(lat, lon), // 지도 초기 좌표
+                    width : "100%", // 지도의 넓이
+                    height : "400px", // 지도의 높이
+                    zoom : 17
+                  });
+
+                  marker = new Tmapv2.Marker({
+                    position : new Tmapv2.LatLng(lat,lon),
+                    map : map
+                  });
+
+                  InfoWindow = new Tmapv2.InfoWindow({
+                    position : new Tmapv2.LatLng(lat,lon),
+                    content : content,
+                    type : 2,
+                    map : map
+                  });
+                  map.setCenter(new Tmapv2.LatLng(lat,lon));
+                  map.setZoom(15);
+                });
+      }
+    }
+  </script>
+</head>
+<body onload="initTmap()"><!-- 맵 생성 실행 -->
+<div id="map_div"></div>
+</body>
+</html>
