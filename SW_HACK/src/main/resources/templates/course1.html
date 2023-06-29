@@ -56,6 +56,8 @@
                   var headers = {};
                   headers["appKey"] = "cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve";
 
+                  var a = 126.983937
+                  var b = 37.564991
                   $.ajax({
                     method: "POST",
                     headers: headers,
@@ -66,6 +68,11 @@
                       "startY": String(lon),
                       "endX": String(goalLat),
                       "endY": String(goalLng),
+                      /*
+                      "startX" : "126.983937",
+                      "startY" : "37.564991",
+                      "endX" : "126.988940",
+                      "endY" : "37.566158",*/
                       "reqCoordType": "WGS84GEO",
                       "resCoordType": "EPSG3857",
                       "startName": "출발지",

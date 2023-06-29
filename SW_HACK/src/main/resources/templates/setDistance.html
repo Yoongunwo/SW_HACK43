@@ -1,51 +1,146 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이동거리 선택</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <br>
-        <script
-            src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve"></script>
-
-        <input type="hidden" id="latitude" value="">
-        <input type="hidden" id="longitude" value="">
-
-        <script th:inline="javascript">
-            function initTmap() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function (position) {
-                            var lat = position.coords.latitude;
-                            var lon = position.coords.longitude;
-
-                        // 위도와 경도를 숨겨진 필드에 저장
-                            document.getElementById('latitude').value = lat;
-                            document.getElementById('longitude').value = lon;
-                        }
-                    )
-                }
-            }
-
-            // 페이지 로드시 initTmap 함수 호출
-            window.onload = initTmap;
-        </script>
-        <p class="bigfont">이동거리를 선택해주세요</p><br>
-        <div id="value" class="output"></div>
-        <input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance"><br>
-        <button type="button" onclick="navigateToNextPage()">버튼</button>
-
-    <script>
-        function navigateToNextPage() {
-            var walkingDistance = document.getElementById('walkingdistance').value;
-            var lat = document.getElementById('latitude').value;
-            var lon = document.getElementById('longitude').value;
-            var url = 'http://localhost:8080/tmap/' + walkingDistance + '/' + lat + '/' + lon;
-            window.location.href = url;
+    <!--<link rel="stylesheet" href="/css/style.css">-->
+    <style>
+        body {
+            text-align: center;
+            width: 360px;
+            height: 680px;
+            border: 1px solid #000000;
+            margin-left: 600px;
         }
-    </script>
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .box {
+            background-color: #f1f1f1;
+            width: 160px;
+            height: 104px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .slider {
+            -webkit-appearance: none; /* 기본 CSS 스타일을 적용하지 않기 위해서 */
+            width: 300px; /* 슬라이더 길이 */
+            height: 4px; /* 슬라이더 두께 */
+            border-radius: 5px; /* 슬라이더 모서리를 약간 둥글게 */
+            background: #eaeaea; /* 슬라이더 색상 */
+            outline: none; /* 슬라이더 테두리 없이 */
+            margin : 25px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none; /* 기본 CSS 스타일을 적용하지 않기 위해서 */
+            appearance: none; /* 기본 CSS 스타일을 적용하지 않기 위해서 */
+            width: 30px; /* 슬라이더 핸들 길이 */
+            height: 30px; /* 슬라이더 핸들 높이 */
+            border-radius: 50%; /* 핸들 모양을 원모양으로 만들기 위함 */
+            background: #77e92a; /* 슬라이더 핸들 색상 */
+            cursor: pointer; /* 슬라이더 핸들에 마우스를 갖다대면 포인터로 변경 */
+        }
+
+        .button{
+            width: 328px;
+            height: 54px;
+            border-radius: 30px;
+            border: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<br>
+<script
+        src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve"></script>
+
+<input type="hidden" id="latitude" value="">
+<input type="hidden" id="longitude" value="">
+
+<script th:inline="javascript">
+    function initTmap() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+
+                    // 위도와 경도를 숨겨진 필드에 저장
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lon;
+                }
+            )
+        }
+    }
+
+    // 페이지 로드시 initTmap 함수 호출
+    window.onload = initTmap;
+</script>
+
+<p style="font-size: 18px; height: 89px; font-weight: bolder;">이동거리를 선택해주세요</p><br>
+<div style="display: flex; flex-direction: row; justify-content: space-between">
+    <div style="font-size: 16px; color:#b9b9b9; margin-left:30px;" id="minDistance" class="minDistance">0 Km</div>
+    <div>
+        <div id="value" style="font-size: 20px;"></div>
+    </div> <!-- 현재 거리 표시-->
+    <div style="font-size: 16px; color:#b9b9b9; margin-right:30px;" id="maxDistance" class="maxDistance">10 Km</div>
+</div>
+
+<input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance" name="distance"><br>
+
+<div class="container">
+    <div class="box">소요 시간 : </br>
+        <span id="walkingTime"></span></div>
+    <div class="box">총 거리 : </br>
+        <span id="distanceDisplay"></span></div>
+</div>
+
+<div style="height: 50px;"></div>
+
+<input type="button" style=" background-color:#dcdcdc;" class="button" value="이전으로" onClick="location.href='/step1'">
+<div style="margin:15px;"></div>
+<input type="button" style=" background-color:#70e422;" class="button" value="추천받기" onclick="navigateToNextPage()">
+
+<script>
+    var slider = document.getElementById("walkingdistance");
+    var output = document.getElementById("value");
+    var distanceText = document.getElementById("distanceDisplay");
+    var walkingTime = document.getElementById("walkingTime");
+
+    function updateValue() {
+        output.innerHTML = slider.value + " Km";
+        walkingTime.innerHTML = (slider.value / 0.5) * 7 + " 분"; /*슬라이더의 총 단계수를 구하고, 한 단계당 7분씩 추가*/
+        distanceText.innerHTML = output.innerHTML;
+    }
+
+    slider.oninput = function () {
+        updateValue();
+    };
+
+    /*function movePreviousPage(){
+        window.location.href="setDistance.html";   setDistance.html 경로 입력
+    } */
+
+    // 초기 값 설정
+    updateValue();
+
+    function navigateToNextPage() {
+        var walkingDistance = document.getElementById('walkingdistance').value;
+        var lat = document.getElementById('latitude').value;
+        var lon = document.getElementById('longitude').value;
+        var url = 'http://localhost:8080/tmap/' + walkingDistance + '/' + lat + '/' + lon;
+        window.location.href = url;
+    }
+</script>
 </body>
 </html>
