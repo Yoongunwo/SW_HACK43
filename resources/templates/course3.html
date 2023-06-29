@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>코스 선택</title>
+
+    <style>
+        body {
+            text-align: center;
+            width: 360px;
+            height: 680px;
+            border: 1px solid #000000;
+            margin-left: 600px;
+        }
+
+        .button1{
+            position:relative;
+            width:48px;
+            height:48px;
+            right:41px;
+            bottom:58px;
+        }
+
+        .button2{
+            position:relative;
+            width:48px;
+            height:48px;
+            bottom:58px;
+        }
+
+        .button3{
+            position:relative;
+            width:48px;
+            height:48px;
+            left:41px;
+            bottom:40px;
+        }
+
+        .returnButton{
+            position: relative;
+            width: 112px;
+            height: 54px;
+            top:430px;
+            right:7px;
+            border-radius: 30px;
+            border:none;
+        }
+
+        .selectCourseButton{
+            position: relative;
+            background-color: #8af742;
+            width: 204px;
+            height: 54px;
+            top:430px;
+            left:4px;
+            border-radius: 30px;
+            border:none;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width:360px; height: 32px; background-color: #ffffff;"></div>
+    <p style="font-weight:bold; width: 360px; height: 24px; background-color: #ffffff; margin:0;">추천코스</p>
+
+    <div>
+        <img src="img/course3/course3_background.png" style="width: 360px; height: 60px;">
+        <a href="course1.html"><img src="img/course3/course3_1.png" class="button1"></a>
+        <a href="course2.html"><img src="img/course3/course3_2.png" class="button2"></a>
+        <img src="img/course3/course3_3.png" class="button3">
+    </div>
+
+    
+    <div>
+        <input type="button" class="returnButton" value="재탐색" onclick="movePreviousPage()">
+        <input type="button" class="selectCourseButton" value="3코스 선택" onclick="moveNextPage()">
+    </div>
+
+    <script>
+        function moveNextPage(){
+            window.location.href="onWalking.html"; /* onWalking.html 경로 입력 */
+        }
+
+        function movePreviousPage(){
+            window.location.href="setDistance.html";  /* setDistance.html 경로 입력 */
+        }
+    </script>
+
+</body>
+</html>

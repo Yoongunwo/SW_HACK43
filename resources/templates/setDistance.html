@@ -4,61 +4,126 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이동거리 선택</title>
-    <link rel="stylesheet" href="/resources/static/css/style.css">
 
     <style>
-        .minDistance{
-            position:absolute;
-            left:15%;
+        body {
+            text-align: center;
+            width: 360px;
+            height: 680px;
+            border: 1px solid #000000;
+            margin-left: 600px;
         }
-        .maxDistance{
-            position:absolute;
-            right:15%;
+
+        .container {
+            display: flex;
+            justify-content: space-around;
         }
+
+        .box {
+            background-color: #f1f1f1;
+            width: 160px;
+            height: 104px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .slider {
+            -webkit-appearance: none; /* 기본 CSS 스타일을 적용하지 않기 위해서 */
+            width: 300px; /* 슬라이더 길이 */
+            height: 4px; /* 슬라이더 두께 */
+            border-radius: 5px; /* 슬라이더 모서리를 약간 둥글게 */
+            background: #eaeaea; /* 슬라이더 색상 */
+            outline: none; /* 슬라이더 테두리 없이 */
+            margin : 25px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none; /* 기본 CSS 스타일을 적용하지 않기 위해서 */
+            appearance: none; /* 기본 CSS 스타일을 적용하지 않기 위해서 */
+            width: 30px; /* 슬라이더 핸들 길이 */
+            height: 30px; /* 슬라이더 핸들 높이 */
+            border-radius: 50%; /* 핸들 모양을 원모양으로 만들기 위함 */
+            background: #77e92a; /* 슬라이더 핸들 색상 */
+            cursor: pointer; /* 슬라이더 핸들에 마우스를 갖다대면 포인터로 변경 */
+        }
+
+        .button{
+            width: 328px;
+            height: 54px;
+            border-radius: 30px;
+            border: none;
+        }
+
     </style>
 
 </head>
 <body>
-    <br><p class="bigfont" style="margin:100px">이동거리를 선택해주세요</p><br>
-    <div style="display: inline-block;font-size: 125%;" id="minDistance" class="minDistance">0.5 Km</div>
-    <div style="display: inline-block;"><div id="value" style="font-size: 200%;"></div></div> <!-- 현재 거리 표시-->
-    <div style="display: inline-block;font-size: 125%;" id="maxDistance"class="maxDistance">10 Km</div><br>
-
-    <form method="post" action="https://0284-211-194-113-3.ngrok-free.app/api/km/2">
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
-        <input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance" name="distance"><br>
-
-        <div style="display: inline-block;font-size: 100%;" id="minDistance" class="minDistance">최소</div>
-        <div style="display: inline-block;font-size: 100%;" id="minDistance" class="maxDistance">최대</div>
+    <div style="width: 360px; height: 680px; text-align: center; background-color: #ffffff">
+        <br>
+        <p style="font-size: 18px; height: 89px; font-weight: bolder;">이동거리를 선택해주세요</p><br>
+        <div style="display: flex; flex-direction: row; justify-content: space-between">
+            <div style="font-size: 16px; color:#b9b9b9; margin-left:30px;" id="minDistance" class="minDistance">0 Km</div>
+            <div>
+            <div id="value" style="font-size: 20px;"></div>
+            </div> <!-- 현재 거리 표시-->
+            <div style="font-size: 16px; color:#b9b9b9; margin-right:30px;" id="maxDistance" class="maxDistance">10 Km</div>
+        </div>
     
-        <input type="submit" style="margin:100px" class="button" value="추천받기">
-    </form>
+        <!-- 데이터(거리,현재 위치[위도,경도]) 보내는 주소(course1.html) action에 입력 -->
+        <form method="post" action="course1.html">
+            <input type="hidden" id="latitude" name="latitude"> <!-- 현재 위도 -->
+            <input type="hidden" id="longitude" name="longitude"> <!-- 현재 경도 -->
+            <input type="range" min="0.5" max="10" step="0.5" value="5" class="slider" id="walkingdistance" name="distance"><br>
+            
+            
+            <div class="container">
+                <div class="box">소요 시간 : </br>
+                    <span id="walkingTime"></span></div>
+                <div class="box">총 거리 : </br>
+                    <span id="distanceDisplay"></span></div>
+            </div>
 
-    <script>
-        var slider = document.getElementById("walkingdistance");
-        var output = document.getElementById("value");
+            <div style="height: 50px;"></div>
 
-        function updateValue() {
-            output.innerHTML = slider.value + " Km";
-        }
+            <input type="button" style=" background-color:#dcdcdc;" class="button" value="이전으로" onClick="movePreviousPage()">
+            <div style="margin:15px;"></div>
+            <input type="submit" style=" background-color: #70e422;" class="button" value="추천받기">
+        </form>
+    </div>
 
-        slider.oninput = function() {
+        <script>
+            var slider = document.getElementById("walkingdistance");
+            var output = document.getElementById("value");
+            var distanceText = document.getElementById("distanceDisplay");
+            var walkingTime = document.getElementById("walkingTime");
+    
+            function updateValue() {
+                output.innerHTML = slider.value + " Km";
+                walkingTime.innerHTML = (slider.value / 0.5) * 7 + " 분"; /*슬라이더의 총 단계수를 구하고, 한 단계당 7분씩 추가*/
+                distanceText.innerHTML = output.innerHTML;
+            }
+    
+            slider.oninput = function () {
+                updateValue();
+            };
+
+            function movePreviousPage(){
+                window.location.href="setDistance.html";  /* setDistance.html 경로 입력 */
+            }
+
+            // 초기 값 설정
             updateValue();
-        };
-
-        // 초기 값 설정
-        updateValue();
-
-        // 현재 위치 가져오기
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-
-            // 폼에 위치 정보 설정
-            document.getElementById("latitude").value = latitude;
-            document.getElementById("longitude").value = longitude;
-        });
-    </script>
+    
+            // 현재 위치 가져오기
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+    
+                // 폼에 위치 정보 설정
+                document.getElementById("latitude").value = latitude;
+                document.getElementById("longitude").value = longitude;
+            });
+        </script>
 </body>
 </html>
+
