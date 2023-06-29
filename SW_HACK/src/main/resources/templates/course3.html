@@ -1,9 +1,201 @@
 <!DOCTYPE html>
-<head>
-  <meta charset="UTF-8">
-  <title>코스 선택</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>코스 선택</title>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script
+        src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve"></script>
+<script type="text/javascript" th:inline="javascript">
+  var map;
+  var marker_s, marker_e, marker_p1, marker_p2;
+  var totalMarkerArr = [];
+  var drawInfoArr = [];
+  var resultdrawArr = [];
 
-  <style>
+  var goalLat = [[${latLng[2][0]}]]
+  var goalLng = [[${latLng[2][1]}]]
+
+  function initTmap() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+              function (position) {
+                var lat = position.coords.latitude;
+                var lon = position.coords.longitude;
+
+                // 1. 지도 띄우기
+                map = new Tmapv2.Map("map_div", {
+                  center: new Tmapv2.LatLng(lat, lon),
+                  width: "100%",
+                  height: "400px",
+                  zoom: 17,
+                  zoomControl: true,
+                  scrollwheel: true
+                });
+
+                // 2. 시작, 도착 심볼찍기
+                // 시작
+                marker_s = new Tmapv2.Marker(
+                        {
+                          position: new Tmapv2.LatLng(lat, lon),
+                          icon: "https://github.com/Yoongunwo/SW_HACK43/assets/97718735/7eed3120-29c4-4d54-b945-7de44a101470",
+                          iconSize: new Tmapv2.Size(24, 38),
+                          map: map
+                        });
+
+                // 도착
+                marker_e = new Tmapv2.Marker(
+                        {
+                          position: new Tmapv2.LatLng(goalLat, goalLng),
+                          icon: "https://github.com/Yoongunwo/SW_HACK43/assets/97718735/7eed3120-29c4-4d54-b945-7de44a101470",
+                          iconSize: new Tmapv2.Size(24, 38),
+                          map: map
+                        });
+
+                // 3. 경로탐색 API 사용요청
+                var headers = {};
+                headers["appKey"] = "cq1fyGszKpHdSeUta6HO4SxQMi5SZCd1vVs6H1Ve";
+
+                $.ajax({
+                  method: "POST",
+                  headers: headers,
+                  url: "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json&callback=result",
+                  async: false,
+                  data: {
+                    "startX": String(lat),
+                    "startY": String(lon),
+                    "endX": String(goalLat),
+                    "endY": String(goalLng),
+                    "reqCoordType": "WGS84GEO",
+                    "resCoordType": "EPSG3857",
+                    "startName": "출발지",
+                    "endName": "도착지"
+                  },
+                  success: function (response) {
+                    var resultData = response.features;
+
+                    //결과 출력
+                    var tDistance = "총 거리 : "
+                            + ((resultData[0].properties.totalDistance) / 1000)
+                                    .toFixed(1) + "km,";
+                    var tTime = " 총 시간 : "
+                            + ((resultData[0].properties.totalTime) / 60)
+                                    .toFixed(0) + "분";
+
+                    $("#result").text(tDistance + tTime);
+
+                    //기존 그려진 라인 & 마커가 있다면 초기화
+                    if (resultdrawArr.length > 0) {
+                      for (var i in resultdrawArr) {
+                        resultdrawArr[i]
+                                .setMap(null);
+                      }
+                      resultdrawArr = [];
+                    }
+
+                    drawInfoArr = [];
+
+                    for (var i in resultData) { //for문 [S]
+                      var geometry = resultData[i].geometry;
+                      var properties = resultData[i].properties;
+                      var polyline_;
+
+
+                      if (geometry.type == "LineString") {
+                        for (var j in geometry.coordinates) {
+                          // 경로들의 결과값(구간)들을 포인트 객체로 변환
+                          var latlng = new Tmapv2.Point(
+                                  geometry.coordinates[j][0],
+                                  geometry.coordinates[j][1]);
+                          // 포인트 객체를 받아 좌표값으로 변환
+                          var convertPoint = new Tmapv2.Projection.convertEPSG3857ToWGS84GEO(
+                                  latlng);
+                          // 포인트객체의 정보로 좌표값 변환 객체로 저장
+                          var convertChange = new Tmapv2.LatLng(
+                                  convertPoint._lat,
+                                  convertPoint._lng);
+                          // 배열에 담기
+                          drawInfoArr.push(convertChange);
+                        }
+                      } else {
+                        var markerImg = "";
+                        var pType = "";
+                        var size;
+
+                        if (properties.pointType == "S") { //출발지 마커
+                          markerImg = "http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_s.png";
+                          pType = "S";
+                          size = new Tmapv2.Size(24, 38);
+                        } else if (properties.pointType == "E") { //도착지 마커
+                          markerImg = "http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_e.png";
+                          pType = "E";
+                          size = new Tmapv2.Size(24, 38);
+                        } else { //각 포인트 마커
+                          markerImg = "http://topopen.tmap.co.kr/imgs/point.png";
+                          pType = "P";
+                          size = new Tmapv2.Size(8, 8);
+                        }
+
+                        // 경로들의 결과값들을 포인트 객체로 변환
+                        var latlon = new Tmapv2.Point(
+                                geometry.coordinates[0],
+                                geometry.coordinates[1]);
+
+                        // 포인트 객체를 받아 좌표값으로 다시 변환
+                        var convertPoint = new Tmapv2.Projection.convertEPSG3857ToWGS84GEO(
+                                latlon);
+
+                        var routeInfoObj = {
+                          markerImage: markerImg,
+                          lng: convertPoint._lng,
+                          lat: convertPoint._lat,
+                          pointType: pType
+                        };
+
+                        // Marker 추가
+                        marker_p = new Tmapv2.Marker(
+                                {
+                                  position: new Tmapv2.LatLng(
+                                          routeInfoObj.lat,
+                                          routeInfoObj.lng),
+                                  icon: routeInfoObj.markerImage,
+                                  iconSize: size,
+                                  map: map
+                                });
+                      }
+                    }//for문 [E]
+                    drawLine(drawInfoArr);
+                  },
+                  error: function (request, status, error) {
+                    console.log("code:" + request.status + "\n"
+                            + "message:" + request.responseText + "\n"
+                            + "error:" + error);
+                  }
+                });
+              }
+      )
+    }
+  }
+
+  function addComma(num) {
+    var regexp = /\B(?=(\d{3})+(?!\d))/g;
+    return num.toString().replace(regexp, ',');
+  }
+
+  function drawLine(arrPoint) {
+    var polyline_;
+
+    polyline_ = new Tmapv2.Polyline({
+      path: arrPoint,
+      strokeColor: "#DD0000",
+      strokeWeight: 6,
+      map: map
+    });
+    resultdrawArr.push(polyline_);
+  }
+</script>
+
+<style>
     body {
       text-align: center;
       width: 360px;
@@ -36,40 +228,44 @@
     }
 
     .returnButton{
-      position: relative;
+      position: absolute;
       width: 112px;
       height: 54px;
-      top:430px;
-      right:7px;
+      top:611px;
+      left:613px;
       border-radius: 30px;
       border:none;
     }
 
     .selectCourseButton{
-      position: relative;
+      position: absolute;
       background-color: #8af742;
       width: 204px;
       height: 54px;
-      top:430px;
-      left:4px;
+      top:611px;
+      left:742px;
       border-radius: 30px;
       border:none;
     }
   </style>
 </head>
 
-<body>
+<body onload="initTmap();">
 <div style="width:360px; height: 32px; background-color: #ffffff;"></div>
 <p style="font-weight:bold; width: 360px; height: 24px; background-color: #ffffff; margin:0;">추천코스</p>
 
 <div>
-  <img src="/img/course3/course3_background.png" style="width: 360px; height: 60px;">
-  <a href="course1.html"><img src="/img/course3/course3_1.png" class="button1"></a>
-  <a href="course2.html"><img src="/img/course3/course3_2.png" class="button2"></a>
-  <img src="/img/course3/course3_3.png" class="button3">
+  <img src="https://github.com/Yoongunwo/SW_HACK43/assets/97718735/6b4ed041-49bc-41f5-8d33-1e9872700706" style="width: 360px; height: 60px;">
+  <a href="/tmap/course1"><img src="https://github.com/Yoongunwo/SW_HACK43/assets/97718735/882a763a-90fe-4eea-a4db-344c1531ca1b" class="button1"></a>
+  <a href="/tmap/course2"><img src="https://github.com/Yoongunwo/SW_HACK43/assets/97718735/711ea97a-596e-4758-981b-18f9b3d49eac" class="button2"></a>
+  <img src="https://github.com/Yoongunwo/SW_HACK43/assets/97718735/f63bc631-89bb-4a3d-802c-8c135868e350" class="button3">
 </div>
-
-
+<div id="map_wrap" class="map_wrap3">
+  <div id="map_div"></div>
+</div>
+<div class="map_act_btn_wrap clear_box"></div>
+<p id="result"></p>
+<br/>
 <div>
   <input type="button" class="returnButton" value="재탐색" onclick="movePreviousPage()">
   <input type="button" class="selectCourseButton" value="3코스 선택" onclick="moveNextPage()">

@@ -21,12 +21,13 @@ public class homeController {
 
     @GetMapping("/")
     public String step1() {
-        return "course1";
+        return "selectType";
     }
 
     @GetMapping("/step2")
     public String step2() {
-        return "course2";
+        list = null;
+        return "setDistance";
     }
 
     //    @PostMapping("/tmap/{km}")
@@ -39,15 +40,37 @@ public class homeController {
 //        log.info(String.valueOf(km));
 //        return "tmap";
 //    }
+    double[][] list;
+
     @GetMapping("/tmap/{km}/{lat}/{lon}")
-    public String calculateCurLocation(@PathVariable(name = "km") String km,
-                                               @PathVariable(name = "lat") String lat,
-                                               @PathVariable(name = "lon") String lon,
-                                               Model model) {
+    public String course1(@PathVariable(name = "km") String km,
+                          @PathVariable(name = "lat") String lat,
+                          @PathVariable(name = "lon") String lon,
+                          Model model) {
         googleMaps.setLatitude(lat);
         googleMaps.setLongitude(lon);
-        double[][] list = googleMaps.getRandomPlace(Long.parseLong(km));
+        if (list == null) {
+            list = googleMaps.getRandomPlace(Long.parseLong(km));
+        }
         model.addAttribute("latLng", list);
-        return "tmap";
+        return "course1";
+    }
+
+    @GetMapping("/tmap/course1")
+    public String course1(Model model) {
+        model.addAttribute("latLng", list);
+        return "course1";
+    }
+
+    @GetMapping("/tmap/course2")
+    public String course2(Model model) {
+        model.addAttribute("latLng", list);
+        return "course2";
+    }
+
+    @GetMapping("/tmap/course3")
+    public String course3(Model model) {
+        model.addAttribute("latLng", list);
+        return "course3";
     }
 }
