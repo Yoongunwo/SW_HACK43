@@ -77,4 +77,9 @@ public class homeController {
         model.addAttribute("latLng", list);
         return "course3";
     }
+    @GetMapping("/tmap/final")
+    public String finalCourse(Model model){
+        model.addAttribute("latLng", list);
+        return "onWalking";
+    }
 }

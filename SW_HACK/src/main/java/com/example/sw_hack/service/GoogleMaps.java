@@ -11,9 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
 
 //https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=
 // Montreal&alternatives=true&key=AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE
@@ -146,5 +147,123 @@ public class GoogleMaps {
 //            latLngList.add(resultMap);
         }
         return arr;
+    }
+
+    private Object[][] extractLatLngs1(Map<String, Object> map) {
+        List<Map<String, Object>> latLngList = new ArrayList<>();
+        Object arr[][] = new Object[map.size()][2];
+        List<Map<String, Object>> results = (List<Map<String, Object>>) map.get("results");
+        int i=0;
+        for (Map<String, Object> result : results) {
+            Map<String, Object> geometry = (Map<String, Object>) result.get("geometry");
+            Map<String, Object> location = (Map<String, Object>) geometry.get("location");
+
+//            arr[i][0]=location.get("lat");
+//            arr[i++][1]=location.get("lng");
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("lat", location.get("lat"));
+            resultMap.put("lng", location.get("lng"));
+            latLngList.add(resultMap);
+        }
+
+        return arr;
+    }
+
+    public static List<LatLng> decodePoly(String encoded) {
+
+        List<LatLng> poly = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng(((double) lat / 1E5), ((double) lng / 1E5));
+            poly.add(p);
+        }
+
+        return poly;
+    }
+    public static double getElevation(double lat, double lng) throws IOException {
+        // Google Elevation API를 사용하여 주어진 좌표의 고도를 가져옵니다.
+        String urlString = "https://maps.googleapis.com/maps/api/elevation/json?locations=" + lat + "," + lng + "&key=AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE";
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new IOException("Failed to fetch elevation data. Response code: " + responseCode);
+        }
+
+        Scanner scanner = new Scanner(conn.getInputStream());
+        StringBuilder response = new StringBuilder();
+        while (scanner.hasNext()) {
+            response.append(scanner.nextLine());
+        }
+        scanner.close();
+        conn.disconnect();
+
+        // JSON 데이터에서 고도 값을 추출합니다.
+        String json = response.toString();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(json);
+        double elevation = rootNode.get("results").get(0).get("elevation").asDouble();
+
+        return elevation;
+    }
+    public void getLocation(String origin, String destination, String mode, boolean alternatives) throws IOException {
+        int sum = 0;
+        int index =0;
+        List<Integer> list = new ArrayList<>();
+        final String apiKey = "AIzaSyBiol6ZqdyDaOKqUS5EoI0Syk38c02lnpE";
+        String url = "https://maps.googleapis.com/maps/api/directions/json" +
+                "?origin=" + origin +
+                "&destination=" + destination +
+                "&mode=" + mode +
+                "&alternatives"+ alternatives +
+                "&key=" + apiKey;
+        String response = restTemplate.getForObject(url, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode json = mapper.readTree(response);
+        int rout =0;
+        for (JsonNode route : json.path("routes")) {
+            for (JsonNode leg : route.path("legs")) {
+                for (JsonNode step : leg.path("steps")) {
+                    JsonNode polyline = step.path("polyline");
+                    JsonNode points = polyline.path("points");
+                    List<LatLng> coordinates = decodePoly(points.asText());
+                    for (LatLng coordinate : coordinates) {
+                        double latitude = coordinate.getLatitude();
+                        double longitude = coordinate.getLongitude();
+                        sum+=getElevation(latitude,longitude);
+                        index++;
+                    }
+                }
+            }
+            list.add(sum/index);
+            sum=0;
+            index=0;
+            rout++;
+        }
+        System.out.println(String.valueOf(list));
+        System.out.println(rout);
     }
 }
