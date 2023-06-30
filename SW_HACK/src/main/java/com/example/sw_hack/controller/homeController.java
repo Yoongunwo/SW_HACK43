@@ -59,27 +59,32 @@ public class homeController {
         model.addAttribute("latLng", list);
         return "course1";
     }
+    private int index = 0;
 
     @GetMapping("/tmap/course1")
     public String course1(Model model) {
         model.addAttribute("latLng", list);
+        index = 0;
         return "course1";
     }
 
     @GetMapping("/tmap/course2")
     public String course2(Model model) {
         model.addAttribute("latLng", list);
+        index = 1;
         return "course2";
     }
 
     @GetMapping("/tmap/course3")
     public String course3(Model model) {
         model.addAttribute("latLng", list);
+        index = 2;
         return "course3";
     }
     @GetMapping("/tmap/final")
     public String finalCourse(Model model){
         model.addAttribute("latLng", list);
+        model.addAttribute("index", index);
         return "onWalking";
     }
 }
