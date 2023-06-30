@@ -2,6 +2,7 @@ package com.example.sw_hack.controller;
 
 import com.example.sw_hack.admin.LatLng;
 import com.example.sw_hack.service.GoogleMaps;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 
-//@Slf4j
+@Slf4j
 @Controller
 public class homeController {
     private final GoogleMaps googleMaps;
@@ -48,6 +49,7 @@ public class homeController {
         }
 
         model.addAttribute("latLng", list.get(0));
+        log.info(String.valueOf(list.get(0)[0]));
         return "course1";
     }
     private int index = 0;
@@ -56,6 +58,9 @@ public class homeController {
     public String course1(Model model) {
         model.addAttribute("latLng", list.get(0));
         index = 0;
+        log.info(String.valueOf(list.get(0)[0]));
+        log.info(String.valueOf(list.get(0)[1]));
+
         return "course1";
     }
     @PostMapping("/tmap/course1")

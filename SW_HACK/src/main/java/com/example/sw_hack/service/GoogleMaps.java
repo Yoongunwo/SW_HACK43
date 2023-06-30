@@ -130,20 +130,16 @@ public class GoogleMaps {
 
     private List<double[]> extractLatLngs(Map<String, Object> map) {
         List<Map<String, Object>> results = (List<Map<String, Object>>) map.get("results");
-        double arr[][] = new double[results.size()][2];
         List<double[]> list = new ArrayList<>();
-        int i = 0;
         for (Map<String, Object> result : results) {
             Map<String, Object> geometry = (Map<String, Object>) result.get("geometry");
             Map<String, Object> location = (Map<String, Object>) geometry.get("location");
 
             double[] array = new double[2];
-            array[0] = (double) location.get("lat");
-            array[1] = (double) location.get("lng");
+            array[0] = Math.round((double) location.get("lat")*1000000)/1000000.0;
+            array[1] = Math.round((double) location.get("lng")*1000000)/1000000.0;
             list.add(array);
 
-            arr[i][0] = (double) location.get("lat");
-            arr[i++][1] = (double) location.get("lng");
         }
         return list;
     }
