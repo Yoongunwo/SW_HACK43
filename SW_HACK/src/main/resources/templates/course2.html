@@ -13,8 +13,8 @@
         var drawInfoArr = [];
         var resultdrawArr = [];
 
-        var goalLat = [[${latLng[1][0]}]]
-        var goalLng = [[${latLng[1][1]}]]
+        var goalLat = [[${latLng[0]}]];
+        var goalLng = [[${latLng[1]}]];
 
         function initTmap() {
             if (navigator.geolocation) {
@@ -272,15 +272,13 @@
 <p id="result"></p>
 <br/>
 <div>
-    <input type="button" class="returnButton" value="재탐색" onclick="movePreviousPage()">
+    <form id="booleanForm" action="/tmap/course2" method="post">
+        <input type="hidden" name="booleanValue" value="true">
+        <button type="submit" class="returnButton">재탐색</button>
+    </form>
     <input type="button" class="selectCourseButton" value="2코스 선택" onclick="location.href='/tmap/final'">
 </div>
 
-<script>
-    function movePreviousPage() {
-        window.location.href = "setDistance.html";  /* setDistance.html 경로 입력 */
-    }
-</script>
 
 </body>
 </html>

@@ -12,11 +12,9 @@
     var totalMarkerArr = [];
     var drawInfoArr = [];
     var resultdrawArr = [];
-    var index = [[${index}]]
-    var list = [[${latLng}]]
 
-    var goalLat = list[index][0]
-    var goalLng = list[index][1]
+    var goalLat = [[${latLng[0]}]];
+    var goalLng = [[${latLng[1]}]];
 
     function initTmap() {
         if (navigator.geolocation) {

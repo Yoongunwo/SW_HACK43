@@ -31,8 +31,8 @@ public class routeController {
 
     @GetMapping("/km/{km}")
     public String getMap(@PathVariable(name = "km")long km, Model model) {
-        double[][] list =  googleMaps.getRandomPlace(km);
-        model.addAttribute("latLng", list);
+        //double[][] list =  googleMaps.getRandomPlace(km);
+        //model.addAttribute("latLng", list);
         return "test1";
     }
 }

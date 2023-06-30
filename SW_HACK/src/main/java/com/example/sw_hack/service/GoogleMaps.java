@@ -103,7 +103,7 @@ public class GoogleMaps {
     public void setLongitude(String longitude){
         this.longitude = longitude;
     }
-    public double[][] getRandomPlace(long km) {
+    public List<double[]> getRandomPlace(long km) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
                 + latitude + ","
@@ -116,11 +116,9 @@ public class GoogleMaps {
         // JSON 문자열을 파싱하기 위해 JsonParser를 사용합니다.
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String, Object> map = jsonParser.parseMap(response);
-        double[][] list = extractLatLngs(map);
+        //double[][] list = extractLatLngs(map);
+        List<double[]> list = extractLatLngs(map);
 
-
-        // 결과를 가져옵니다.
-        ArrayList<Object> places = (ArrayList<Object>) map.get("results");
 
         // 결과 중 랜덤하게 하나를 선택합니다.
 //            Random rand = new Random();
@@ -130,23 +128,24 @@ public class GoogleMaps {
 
     }
 
-    private double[][] extractLatLngs(Map<String, Object> map) {
-        List<Map<String, Object>> latLngList = new ArrayList<>();
+    private List<double[]> extractLatLngs(Map<String, Object> map) {
         List<Map<String, Object>> results = (List<Map<String, Object>>) map.get("results");
         double arr[][] = new double[results.size()][2];
+        List<double[]> list = new ArrayList<>();
         int i = 0;
         for (Map<String, Object> result : results) {
             Map<String, Object> geometry = (Map<String, Object>) result.get("geometry");
             Map<String, Object> location = (Map<String, Object>) geometry.get("location");
 
-//            Map<String, Object> resultMap = new HashMap<>();
+            double[] array = new double[2];
+            array[0] = (double) location.get("lat");
+            array[1] = (double) location.get("lng");
+            list.add(array);
+
             arr[i][0] = (double) location.get("lat");
             arr[i++][1] = (double) location.get("lng");
-//            resultMap.put("lat", location.get("lat"));
-//            resultMap.put("lng", location.get("lng"));
-//            latLngList.add(resultMap);
         }
-        return arr;
+        return list;
     }
 
     private Object[][] extractLatLngs1(Map<String, Object> map) {
